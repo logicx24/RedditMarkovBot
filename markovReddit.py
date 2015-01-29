@@ -20,9 +20,7 @@ import time
 from praw.handlers import MultiprocessHandler
 import multiprocessing
 import cPickle as pickle
-import sys
-import operator
-import re
+import sys, operator, re, traceback
 
 #handler = MultiprocessHandler()
 
@@ -129,7 +127,8 @@ def monitor_and_train(reddit, monitored):
 								break
 							comment_buffer.remove(comment_tup)
 	except:
-		print('herehrherheherhe')
+		print('Inside Exception')
+		traceback.print_exc(file=sys.stdout)
 		with open("./pickled_files/read_comments.pkl", 'wb') as output:
 			pickle.dump(observed_comments, output, -1)
 		with open("./pickled_files/comments_buffer.pkl", 'wb') as output:
