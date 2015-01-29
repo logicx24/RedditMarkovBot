@@ -87,7 +87,6 @@ def monitor_and_train(reddit, monitored):
 				logging.debug("Started monitoring sub {0}".format(sub))
 				subData = reddit.get_subreddit(sub)
 				for submission in subData.get_hot(limit=75):
-					print("Looking through submissions")
 					logging.debug("Analyzing submission {0}".format(submission.id))
 					#if str(submission.id) not in observed_submissions:
 					flat_comments = praw.helpers.flatten_tree(submission.comments)
@@ -96,18 +95,14 @@ def monitor_and_train(reddit, monitored):
 							continue
 						if str(comment.id) not in observed_comments and search_string in comment.body:
 							logging.debug("Found this comment by {0} with this being said: {1}".format(comment.body, comment.author))
-							print(comment.body)
-							print(comment.author)
 							if (search_string + ": " + option1) in comment.body:
-								print("freqCount")
 								logging.debug("Author asked for a frequency count")
 								user_comments = comment.author.get_comments()
 								user_text = ""
 								for user_comment in user_comments:
 									user_text += " " + user_comment.body.replace("MarkovME","").replace(option1,"").replace(r'\/u\/\w+',"")
-								commentText = frequency_count(re.sub(r'([^\s\w]|_)+','',user_text).replace('\n'," "))
+								commentText = frequency_count(re.sub(r'([^\s\w]|_)+','',user_text))
 							else:
-								print("text_gen")
 								logging.debug("Author asked for a text generation")
 								if str(comment.author.id) in user_to_markov:
 									userMarkov = user_to_markov[str(comment.author.id)]
@@ -120,14 +115,11 @@ def monitor_and_train(reddit, monitored):
 									user_to_markov[str(comment.author.id)] = userMarkov
 								commentText = userMarkov.text_gen()
 							logging.debug("This is being commented now: {0}".format(commentText))
-							print(commentText)
 							try:
 								comment.reply(commentText)
-								print('Ended')
 								logging.debug("Replied to Comment")
 							except praw.errors.RateLimitExceeded as e:
 								logging.debug(e)
-								print("RateLimitExceeded")
 								print(e)
 								start = time.time()
 								comment_buffer.append((commentText, comment))
@@ -146,9 +138,9 @@ def monitor_and_train(reddit, monitored):
 			print("Sleeping before next scan.")
 			time.sleep(60*sleep_time)
 	except:
-		print('Inside Exception')
-		logging.debug("Major exception {0} {1}".format(sys.exc_info()[1], traceback.format_exc()))
+		logging.debug("Major exception inside first except block: {0} {1}".format(sys.exc_info()[1], traceback.format_exc()))
 		traceback.print_exc(file=sys.stdout)
+	finally:
 		with open("./pickled_files/read_comments.pkl", 'wb') as output:
 			pickle.dump(observed_comments, output, -1)
 		with open("./pickled_files/comments_buffer.pkl", 'wb') as output:
