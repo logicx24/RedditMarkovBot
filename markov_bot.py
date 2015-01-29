@@ -5,7 +5,7 @@ class Markov(object):
 
 	def __init__(self, string):
 		self.cache = {}
-		self.words = string.replace("\n", '').split()
+		self.words = string.replace("\n", ' ').split()
 		#self.words = self.initialize()
 		self.cache = self.database()
 		#print("Congrats, you have initialized. Methods you can try are count_phrase(phrase), count_freq(word), or text_gen()")
@@ -44,7 +44,7 @@ class Markov(object):
 		gen_words = []
 		first1 = random.randint(0,len(self.words)-1)
 		first, next = self.words[first1], self.words[first1+1]
-		for w in range(30):
+		for w in range(750):
 			if (first, next) in self.cache:
 				gen_words.append(random.choice(self.cache[(first, next)]))
 				first, next = next, random.choice(self.cache[(first,next)])

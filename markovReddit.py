@@ -8,6 +8,9 @@ Make a database to store viewed comments.
 Make the main process multi-threaded.
 Set up handling for crashes (store data in database)
 Make better system to handle repeats on same thread.
+Add most used word.
+Add most similar redditor. 
+
 """
 
 from markov_bot import Markov
@@ -19,18 +22,18 @@ import multiprocessing
 import cPickle as pickle
 import sys
 
-handler = MultiprocessHandler()
+#handler = MultiprocessHandler()
 
 #observed_submissions = []
 
 
 def initialize():
-	reddit = praw.Reddit(user_agent="Make markov chains from user comments", handler=handler)
-	reddit.login(os.getenv("username"), os.getenv("password"))
+	reddit = praw.Reddit(user_agent="Make markov chains from user comments")
+	reddit.login()
 	return reddit
 
 def get_monitored_subs():
-	return ['test']
+	return ['botwatch','botting']
 
 def monitor_and_train(reddit, monitored):
 	"""Should monitor a given list of subreddits, look for a post with MarkovME, and then get that user's data,
@@ -54,15 +57,21 @@ def monitor_and_train(reddit, monitored):
 	#monitored = get_monitored_subs()
 	start = 0
 
-	while True:
-		try:
+	try:
+		while True:
 			for sub in monitored:
+				print('next sub')
 				subData = reddit.get_subreddit(sub)
-				for submission in subData.get_hot(limit=50):
+				for submission in subData.get_hot(limit=75):
+					print("Looking through submissions")
 					#if str(submission.id) not in observed_submissions:
 					flat_comments = praw.helpers.flatten_tree(submission.comments)
 					for comment in flat_comments:
+						if not isinstance(comment, praw.objects.Comment):
+							continue
 						if str(comment.id) not in observed_comments and search_string in comment.body:
+							print(comment.body)
+							print(comment.author)
 							if str(comment.author.id) in user_to_markov:
 								userMarkov = user_to_markov[str(comment.author.id)]
 							else:
@@ -71,31 +80,36 @@ def monitor_and_train(reddit, monitored):
 								for user_comment in user_comments:
 									user_text += " " + user_comment.body.replace("MarkovME","")
 								userMarkov = Markov(user_text)
-								commentText = userMarkov.text_gen()
 								user_to_markov[str(comment.author.id)] = userMarkov
+							commentText = userMarkov.text_gen()
+							print(commentText)
 							try:
 								comment.reply(commentText)
+								print('wow')
 							except praw.errors.RateLimitExceeded:
+								print("RateLimitExceeded")
 								start = time.time()
 								comment_buffer.append((commentText, comment))
 						observed_comments.append(str(comment.id))
-					#observed_submissions.append(str(submission.id))
-			if comment_buffer: 
-				for comment_tup in comment_buffer:
-					if (time.time() - start) >= 600:
-						try:
-							comment_tup[1].reply(comment_tup[0])
-						except praw.errors.RateLimitExceeded:
-							break
-						comment_buffer.remove(comment_tup)
-		except:
-			with open("./pickled_files/read_comments.pkl", 'wb') as output:
-				pickle.dump(observed_comments, output, -1)
-			with open("./pickled_files/comments_buffer.pkl", 'wb') as output:
-				pickle.dump(comment_buffer, output, -1)
-			with open("./pickled_files/markov_instances.pkl", 'wb') as output:
-				pickle.dump(user_to_markov, output, -1)
-			sys.exit()
+						#observed_submissions.append(str(submission.id))
+				if comment_buffer: 
+					for comment_tup in comment_buffer:
+						if (time.time() - start) >= 600:
+							try:
+								comment_tup[1].reply(comment_tup[0])
+							except praw.errors.RateLimitExceeded:
+								break
+							comment_buffer.remove(comment_tup)
+	except:
+		print('herehrherheherhe')
+		with open("./pickled_files/read_comments.pkl", 'wb') as output:
+			pickle.dump(observed_comments, output, -1)
+		with open("./pickled_files/comments_buffer.pkl", 'wb') as output:
+			pickle.dump(comment_buffer, output, -1)
+		with open("./pickled_files/markov_instances.pkl", 'wb') as output:
+			pickle.dump(user_to_markov, output, -1)
+		sys.exit()
+
 
 
 if __name__ == "__main__":
