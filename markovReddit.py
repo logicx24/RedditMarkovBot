@@ -104,7 +104,7 @@ def monitor_and_train(reddit, monitored):
 								user_comments = comment.author.get_comments()
 								user_text = ""
 								for user_comment in user_comments:
-									user_text += " " + user_comment.body.replace("MarkovME","").replace(option1,"")
+									user_text += " " + user_comment.body.replace("MarkovME","").replace(option1,"").replace(r'\/u\/\w+',"")
 								commentText = frequency_count(re.sub(r'([^\s\w]|_)+','',user_text).replace('\n'," "))
 							else:
 								print("text_gen")
@@ -115,7 +115,7 @@ def monitor_and_train(reddit, monitored):
 									user_comments = comment.author.get_comments()
 									user_text = ""
 									for user_comment in user_comments:
-										user_text += " " + user_comment.body.replace("MarkovME","").replace(option1,"")
+										user_text += " " + user_comment.body.replace("MarkovME","").replace(option1,"").replace(r'\/u\/\w+',"")
 									userMarkov = Markov(user_text)
 									user_to_markov[str(comment.author.id)] = userMarkov
 								commentText = userMarkov.text_gen()
@@ -142,6 +142,8 @@ def monitor_and_train(reddit, monitored):
 								logging.debug(e)
 								break
 							comment_buffer.remove(comment_tup)
+			logging.debug("Entering sleep before next scan.")
+			print("Sleeping before next scan.")
 			time.sleep(60*sleep_time)
 	except:
 		print('Inside Exception')
