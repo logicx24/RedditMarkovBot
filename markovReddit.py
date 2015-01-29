@@ -21,16 +21,34 @@ from praw.handlers import MultiprocessHandler
 import multiprocessing
 import cPickle as pickle
 import sys
+import operator
+import re
 
 #handler = MultiprocessHandler()
 
 #observed_submissions = []
 
+stopwords = []
+with open("stopwords.txt") as words:
+	words = words.read().lower()
+	words = re.sub(r'([^\s\w]|_)+','',words).replace('\n'," ")
+	stopwords = words.split()
 
 def initialize():
 	reddit = praw.Reddit(user_agent="Make markov chains from user comments")
 	reddit.login()
 	return reddit
+
+def frequency_count(text):
+	word_list = [word for word in re.sub(r'([^\s\w]|_)+','',text.lower()).replace('\n'," ").split() if word not in stopwords]
+	word_hash = {}
+	for word in word_list:
+		if word in word_hash:
+			word_hash[word] += 1
+		else:
+			word_hash[word] = 1
+	return " &nbsp; ".join([str(tup[0]) + " : " + str(tup[1]) for tup in sorted(word_hash.items()[::-1], key=operator.itemgetter(1))][::-1][:10])
+
 
 def get_monitored_subs():
 	return ['botwatch','botting']
@@ -46,6 +64,7 @@ def monitor_and_train(reddit, monitored):
 	user_to_comments = {}
 	comment_buffer = []
 	search_string = "MarkovME"
+	option1 = "freqCount"
 
 	if (os.path.isfile("./pickled_files/read_comments.pkl")):
 		observed_comments = pickle.load(open("./pickled_files/read_comments.pkl", 'rb'))
@@ -72,16 +91,25 @@ def monitor_and_train(reddit, monitored):
 						if str(comment.id) not in observed_comments and search_string in comment.body:
 							print(comment.body)
 							print(comment.author)
-							if str(comment.author.id) in user_to_markov:
-								userMarkov = user_to_markov[str(comment.author.id)]
-							else:
+							if (search_string + ": " + option1) in comment.body:
+								print("freqCount")
 								user_comments = comment.author.get_comments()
 								user_text = ""
 								for user_comment in user_comments:
-									user_text += " " + user_comment.body.replace("MarkovME","")
-								userMarkov = Markov(user_text)
-								user_to_markov[str(comment.author.id)] = userMarkov
-							commentText = userMarkov.text_gen()
+									user_text += " " + user_comment.body.replace("MarkovME","").replace(option1,"")
+								commentText = frequency_count(re.sub(r'([^\s\w]|_)+','',user_text).replace('\n'," "))
+							else:
+								print("text_gen")
+								if str(comment.author.id) in user_to_markov:
+									userMarkov = user_to_markov[str(comment.author.id)]
+								else:
+									user_comments = comment.author.get_comments()
+									user_text = ""
+									for user_comment in user_comments:
+										user_text += " " + user_comment.body.replace("MarkovME","").replace(option1,"")
+									userMarkov = Markov(user_text)
+									user_to_markov[str(comment.author.id)] = userMarkov
+								commentText = userMarkov.text_gen()
 							print(commentText)
 							try:
 								comment.reply(commentText)
