@@ -49,7 +49,7 @@ class Markov(object):
 				gen_words.append(random.choice(self.cache[(first, next)]))
 				first, next = next, random.choice(self.cache[(first,next)])
 				if '.' in gen_words[-1][-1]:
-					if len(gen_words) < 6:
+					if len(gen_words) < 40:
 						gen_words[-1] = gen_words[-1].replace('.','')
 					else:
 						break
