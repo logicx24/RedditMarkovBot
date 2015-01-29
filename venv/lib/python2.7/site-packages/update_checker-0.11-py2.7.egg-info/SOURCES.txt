@@ -1,0 +1,12 @@
+LICENSE.txt
+MANIFEST.in
+README.md
+setup.cfg
+setup.py
+update_checker.py
+update_checker_test.py
+update_checker.egg-info/PKG-INFO
+update_checker.egg-info/SOURCES.txt
+update_checker.egg-info/dependency_links.txt
+update_checker.egg-info/requires.txt
+update_checker.egg-info/top_level.txt
