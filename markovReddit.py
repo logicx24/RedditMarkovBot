@@ -29,6 +29,7 @@ import logging
 
 LOG_FILENAME = "botlog.txt"
 logging.basicConfig(filename="botlog.txt", level=logging.DEBUG)
+sleep_time = 5
 
 stopwords = []
 with open("stopwords.txt") as words:
@@ -53,6 +54,8 @@ def frequency_count(text):
 
 
 def get_monitored_subs():
+	"""Eventually, this function will somehow determine a list of subreddits that've accepted this bot, and return a list of them.
+	   For now, I just set it manually."""
 	return ['botwatch','botting']
 
 def monitor_and_train(reddit, monitored):
@@ -139,6 +142,7 @@ def monitor_and_train(reddit, monitored):
 								logging.debug(e)
 								break
 							comment_buffer.remove(comment_tup)
+			time.sleep(60*sleep_time)
 	except:
 		print('Inside Exception')
 		logging.debug("Major exception {0} {1}".format(sys.exc_info()[1], traceback.format_exc()))
