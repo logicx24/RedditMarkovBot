@@ -8,7 +8,6 @@ Make a database to store viewed comments.
 Make the main process multi-threaded.
 Set up handling for crashes (store data in database)
 Make better system to handle repeats on same thread.
-Add most used word.
 Add most similar redditor. 
 
 """
@@ -125,6 +124,7 @@ def monitor_and_train(reddit, monitored):
 							try:
 								comment.reply(commentText)
 								print('Ended')
+								logging.debug("Replied to Comment")
 							except praw.errors.RateLimitExceeded as e:
 								logging.debug(e)
 								print("RateLimitExceeded")
