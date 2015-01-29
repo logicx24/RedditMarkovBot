@@ -21,10 +21,14 @@ from praw.handlers import MultiprocessHandler
 import multiprocessing
 import cPickle as pickle
 import sys, operator, re, traceback
+import logging
 
 #handler = MultiprocessHandler()
 
 #observed_submissions = []
+
+LOG_FILENAME = "botlog.txt"
+logging.basicConfig(filename="botlog.txt", level=logging.DEBUG)
 
 stopwords = []
 with open("stopwords.txt") as words:
@@ -64,6 +68,7 @@ def monitor_and_train(reddit, monitored):
 	search_string = "MarkovME"
 	option1 = "freqCount"
 
+	logging.debug("UnPickling files into objects")
 	if (os.path.isfile("./pickled_files/read_comments.pkl")):
 		observed_comments = pickle.load(open("./pickled_files/read_comments.pkl", 'rb'))
 	if (os.path.isfile("./pickled_files/comment_buffer.pkl")):
@@ -73,24 +78,27 @@ def monitor_and_train(reddit, monitored):
 	
 	#monitored = get_monitored_subs()
 	start = 0
-
 	try:
 		while True:
 			for sub in monitored:
 				print('next sub')
+				logging.debug("Started monitoring sub {0}".format(sub))
 				subData = reddit.get_subreddit(sub)
 				for submission in subData.get_hot(limit=75):
 					print("Looking through submissions")
+					logging.debug("Analyzing submission {0}".format(submission.id))
 					#if str(submission.id) not in observed_submissions:
 					flat_comments = praw.helpers.flatten_tree(submission.comments)
 					for comment in flat_comments:
 						if not isinstance(comment, praw.objects.Comment):
 							continue
 						if str(comment.id) not in observed_comments and search_string in comment.body:
+							logging.debug("Found this comment by {0} with this being said: {1}".format(comment.body, comment.author))
 							print(comment.body)
 							print(comment.author)
 							if (search_string + ": " + option1) in comment.body:
 								print("freqCount")
+								logging.debug("Author asked for a frequency count")
 								user_comments = comment.author.get_comments()
 								user_text = ""
 								for user_comment in user_comments:
@@ -98,6 +106,7 @@ def monitor_and_train(reddit, monitored):
 								commentText = frequency_count(re.sub(r'([^\s\w]|_)+','',user_text).replace('\n'," "))
 							else:
 								print("text_gen")
+								logging.debug("Author asked for a text generation")
 								if str(comment.author.id) in user_to_markov:
 									userMarkov = user_to_markov[str(comment.author.id)]
 								else:
@@ -108,12 +117,15 @@ def monitor_and_train(reddit, monitored):
 									userMarkov = Markov(user_text)
 									user_to_markov[str(comment.author.id)] = userMarkov
 								commentText = userMarkov.text_gen()
+							logging.debug("This is being commented now: {0}".format(commentText))
 							print(commentText)
 							try:
 								comment.reply(commentText)
-								print('wow')
-							except praw.errors.RateLimitExceeded:
+								print('Ended')
+							except praw.errors.RateLimitExceeded as e:
+								logging.debug(e)
 								print("RateLimitExceeded")
+								print(e)
 								start = time.time()
 								comment_buffer.append((commentText, comment))
 						observed_comments.append(str(comment.id))
@@ -123,11 +135,13 @@ def monitor_and_train(reddit, monitored):
 						if (time.time() - start) >= 600:
 							try:
 								comment_tup[1].reply(comment_tup[0])
-							except praw.errors.RateLimitExceeded:
+							except praw.errors.RateLimitExceeded as e:
+								logging.debug(e)
 								break
 							comment_buffer.remove(comment_tup)
 	except:
 		print('Inside Exception')
+		logging.debug("Major exception {0} {1}".format(sys.exc_info()[1], traceback.format_exc()))
 		traceback.print_exc(file=sys.stdout)
 		with open("./pickled_files/read_comments.pkl", 'wb') as output:
 			pickle.dump(observed_comments, output, -1)

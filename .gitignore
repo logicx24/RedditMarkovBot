@@ -1,1 +1,3 @@
 venv/*
+botlog.txt
+pickled_files/*
