@@ -26,8 +26,7 @@ handler = MultiprocessHandler()
 
 def initialize():
 	reddit = praw.Reddit(user_agent="Make markov chains from user comments", handler=handler)
-	#reddit.login(os.getenv("username"), os.getenv("password"))
-	reddit.login(username="RedditMarkovBot", password="starscream")
+	reddit.login(os.getenv("username"), os.getenv("password"))
 	return reddit
 
 def get_monitored_subs():
