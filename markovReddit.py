@@ -6,7 +6,6 @@ Basic functionality done.
 TODO:
 Make a database to store viewed comments.
 Make the main process multi-threaded.
-Pickle the Markov Objects to store after use.
 Set up handling for crashes (store data in database)
 Make better system to handle repeats on same thread.
 """
@@ -55,7 +54,7 @@ def monitor_and_train(reddit, monitored):
 	
 	#monitored = get_monitored_subs()
 	start = 0
-	
+
 	while True:
 		try:
 			for sub in monitored:
