@@ -46,7 +46,7 @@ class Markov(object):
 			return "You didn't have enough publicly available comments for text_gen to work."
 		first1 = random.randint(0,len(self.words)-2)
 		first, next = self.words[first1], self.words[first1+1]
-		for w in range(750):
+		for w in range(150):
 			if (first, next) in self.cache:
 				gen_words.append(random.choice(self.cache[(first, next)]))
 				first, next = next, random.choice(self.cache[(first,next)])
