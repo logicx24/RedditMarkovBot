@@ -21,6 +21,7 @@ import multiprocessing
 import cPickle as pickle
 import sys, operator, re, traceback
 import logging
+from config import *
 
 #handler = MultiprocessHandler()
 
@@ -38,7 +39,7 @@ with open("stopwords.txt") as words:
 
 def initialize():
 	reddit = praw.Reddit(user_agent="Make markov chains from user comments")
-	reddit.login()
+	reddit.login(REDDIT_USER_NAME, REDDIT_PASSWORD)
 	return reddit
 
 def frequency_count(text):
