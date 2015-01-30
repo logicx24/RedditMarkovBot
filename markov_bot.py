@@ -35,9 +35,12 @@ class Markov(object):
 		for w1, w2, w3 in self.triples():
 			key = (w1, w2)
 			if key in self.cache:
-				self.cache[key].append(w3)
+				if w3 in self.cache[key]:
+					self.cache[key][w3] += 1
+				else:
+					self.cache[key][w3] = 1.0
 			else:
-				self.cache[key] = [w3]
+				self.cache[key] = {w3: 1.0}
 		return self.cache
 
 	def text_gen(self):
@@ -48,8 +51,8 @@ class Markov(object):
 		first, next = self.words[first1], self.words[first1+1]
 		for w in range(150):
 			if (first, next) in self.cache:
-				gen_words.append(random.choice(self.cache[(first, next)]))
-				first, next = next, random.choice(self.cache[(first,next)])
+				gen_words.append(self.weighted_choice(self.cache[(first, next)].items()))
+				first, next = next, self.weighted_choice(self.cache[(first,next)].items())
 				if '.' in gen_words[-1][-1]:
 					if len(gen_words) < 40:
 						gen_words[-1] = gen_words[-1].replace('.','')
@@ -62,6 +65,17 @@ class Markov(object):
 		#gen_words = self.remove_char(' '.join(gen_words))
 
 		return gen_words
+
+
+	def weighted_choice(self, choices):
+		total = sum(w for c, w in choices)
+		r = random.uniform(0, total)
+		upto = 0
+		for c, w in choices:
+			if upto + w >= r:
+				return c
+			upto += w
+		assert False, "Shouldn't get here"
 
 	def count_freq(self, word):
 		counter = 0
