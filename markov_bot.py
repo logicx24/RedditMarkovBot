@@ -5,7 +5,7 @@ class Markov(object):
 
 	def __init__(self, string):
 		self.cache = {}
-		self.words = re.sub(r'^https?:\/\/.*[\r\n]*', '', string.replace("\n", ' '), flags=re.MULTILINE).split()
+		self.words = [word for word in re.sub(r'^https?:\/\/.*[\r\n]*', '', string.replace("\n", ' '), flags=re.MULTILINE).split() if not word.startswith("http")]
 		#self.words = self.initialize()
 		self.cache = self.database()
 		#print("Congrats, you have initialized. Methods you can try are count_phrase(phrase), count_freq(word), or text_gen()")
