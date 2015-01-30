@@ -1,17 +1,5 @@
 #A reddit bot that talks like you do. (Trains a markov chain on your comments).
 
-"""
-Basic functionality done. 
-
-TODO:
-Make a database to store viewed comments.
-Make the main process multi-threaded.
-Set up handling for crashes (store data in database)
-Make better system to handle repeats on same thread.
-Add most similar redditor. 
-
-"""
-
 from markov_bot import Markov
 import praw
 import os
@@ -112,7 +100,7 @@ def monitor_and_train(reddit, monitored):
 									user_text = ""
 									for user_comment in user_comments:
 										user_text += " " + user_comment.body.replace("MarkovME","").replace(option1,"").replace(r'\/u\/\w+',"")
-									user_text = re.sub(r'([^\.,\s\w]|_)+','',user_text)
+									user_text = re.sub(r'([^\.-,\s\w]|_)+','',user_text)
 									userMarkov = Markov(user_text)
 									user_to_markov[str(comment.author.id)] = userMarkov
 								commentText = userMarkov.text_gen()

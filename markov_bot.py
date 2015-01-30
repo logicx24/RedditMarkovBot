@@ -12,11 +12,7 @@ class Markov(object):
 		#self.title = self.accumulate_text.title
 
 	#Rudimentary Spell Check: Find the string distance between the proposed word and every word in the corpus, and then just suggest a random word
-	# that has the smallest distance. 
-	# Maybe give people a way to say the thing was wrong, so it can learn and improve over time?
-
-	#Implement depth first search to scour all of your files for text files, and add the ones it finds to the corpus.
-	#Add a web crawler to constantly add files from the internet. Create a massive corpus, and use it for something cool.       
+	# that has the smallest distance.       
 		
 	def triples(self):
 		if len(self.words) < 3:
