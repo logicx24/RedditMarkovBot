@@ -111,6 +111,7 @@ def monitor_and_train(reddit, monitored):
 									user_text = ""
 									for user_comment in user_comments:
 										user_text += " " + user_comment.body.replace("MarkovME","").replace(option1,"").replace(r'\/u\/\w+',"")
+									user_text = re.sub(r'([^\.,\s\w]|_)+','',user_text)
 									userMarkov = Markov(user_text)
 									user_to_markov[str(comment.author.id)] = userMarkov
 								commentText = userMarkov.text_gen()
