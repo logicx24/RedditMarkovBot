@@ -98,7 +98,7 @@ def monitor_and_train(reddit, monitored):
 							logging.debug("Found this comment by {0} with this being said: {1}".format(comment.body, comment.author))
 							if (search_string + ": " + option1) in comment.body:
 								logging.debug("Author asked for a frequency count")
-								user_comments = comment.author.get_comments(limit=450)
+								user_comments = comment.author.get_comments(limit=None)
 								user_text = ""
 								for user_comment in user_comments:
 									user_text += " " + user_comment.body.replace("MarkovME","").replace(option1,"").replace(r'\/u\/\w+',"")
