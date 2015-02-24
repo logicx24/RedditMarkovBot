@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Reddit Markov Bot by logicx24</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Reddit Markov Bot</h1>
+        <p>A bot that, whenever your post MarkovME on reddit, responds with a random sampling of your comments using a Markov Chain.</p>
+
+        <p class="view"><a href="https://github.com/logicx24/RedditMarkovBot">View the Project on GitHub <small>logicx24/RedditMarkovBot</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/logicx24/RedditMarkovBot/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/logicx24/RedditMarkovBot/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/logicx24/RedditMarkovBot">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <p>A Markov Chain for Reddit Comments</p>
+
+<p>To run your own instance of this, just do "pip install -r requirements.txt" and then run "python markovReddit.py". This runs on Python 2.7. </p>
+
+<p>Also, ignore all the random notes I wrote to myself while I code. Though, if you'd like to implement any of my TODO's, I'd be
+delighted. </p>
+
+<p>To use on reddit, just type in MarkovME for a generation of past comments, and MarkovME: freqCount for an analysis of your most used words.</p>
+
+<p>Better formatted TODOs:</p>
+
+<ol>
+<li><p>I want this bot to have threads. Specifically, I want it to have a separate instance for each group of subreddits. Now, praw supports this with praw-multiprocess. I'm working on making the bot run in several different processes. It's easy because it doesn't share state.</p></li>
+<li><p>I want a database, eventually, so I can start collecting info on users. </p></li>
+<li><p>I need to handle exceptions less jenkily.</p></li>
+<li><p>I want to eventually add a feature that'll tell you the user that's most similar to you (Jaccard similarity between subscribed subreddits). This will take an incredible amount of data gathering, so it's a long term goal.</p></li>
+<li><p>The whole thing right now feels kind of jenky and unreliable. I don't feel confident that if I left it to run in the morning, it wouldn't crash in an hour. That's a multitutde of issues that I'll work on. </p></li>
+</ol>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/logicx24">logicx24</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
